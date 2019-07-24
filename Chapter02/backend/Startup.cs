@@ -37,7 +37,6 @@ namespace QandA
             }
             else
             {
-                app.UseHsts();
                 app.UseHttpsRedirection();
             }
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aspnet/signalr": "^3.0.0-preview5-19227-01",
+    "@aspnet/signalr": "^3.0.0-preview6.19307.2",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.11",
     "@types/jest": "24.0.12",

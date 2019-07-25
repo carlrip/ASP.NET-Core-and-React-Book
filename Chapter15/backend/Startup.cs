@@ -45,7 +45,7 @@ namespace QandA
             {
                 upgrader.PerformUpgrade();
             }
-
+		
             services.AddControllers();
 
             services.AddScoped<IDataRepository, DataRepository>();
@@ -92,7 +92,6 @@ namespace QandA
             }
             else
             {
-                app.UseHsts();
                 app.UseHttpsRedirection();
             }
 

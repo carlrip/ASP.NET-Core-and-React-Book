@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
-using System.Text.Json.Serialization;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -161,7 +161,7 @@ namespace QandA.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();
-                var user = JsonSerializer.Parse<User>(jsonContent, new JsonSerializerOptions
+                var user = JsonSerializer.Deserialize<User>(jsonContent, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });

@@ -39,7 +39,7 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
     history.push(`/search?criteria=${search}`);
   };
 
-  const auth = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
 
   return (
     <div
@@ -57,28 +57,17 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
         box-shadow: 0 3px 7px 0 rgba(110, 112, 114, 0.21);
       `}
     >
-      <div>
-        <Link
-          to="/"
-          css={css`
-            font-size: 24px;
-            font-weight: bold;
-            color: ${gray1};
-            text-decoration: none;
-          `}
-        >
-          Q & A
-        </Link>
-        <span
-          css={css`
-            margin-left: 10px;
-            font-size: 16px;
-            color: ${gray2};
-          `}
-        >
-          {process.env.REACT_APP_ENV || 'development'}
-        </span>
-      </div>
+      <Link
+        to="/"
+        css={css`
+          font-size: 24px;
+          font-weight: bold;
+          color: ${gray1};
+          text-decoration: none;
+        `}
+      >
+        Q & A
+      </Link>
       <form onSubmit={handleSearchSubmit}>
         <input
           type="text"
@@ -102,23 +91,24 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
           `}
         />
       </form>
-      {auth.isAuthenticated() ? (
-        <div>
-          <span>{auth.getUserName()}</span>
-          <Link
-            to={{ pathname: '/signout', state: { local: true } }}
-            css={buttonStyle}
-          >
+      {!loading &&
+        (isAuthenticated ? (
+          <div>
+            <span>{user!.name}</span>
+            <Link
+              to={{ pathname: '/signout', state: { local: true } }}
+              css={buttonStyle}
+            >
+              <UserIcon />
+              <span>Sign Out</span>
+            </Link>
+          </div>
+        ) : (
+          <Link to="/signin" css={buttonStyle}>
             <UserIcon />
-            <span>Sign Out</span>
+            <span>Sign In</span>
           </Link>
-        </div>
-      ) : (
-        <Link to="/signin" css={buttonStyle}>
-          <UserIcon />
-          <span>Sign In</span>
-        </Link>
-      )}
+        ))}
     </div>
   );
 };

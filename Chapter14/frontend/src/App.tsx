@@ -10,13 +10,11 @@ import { SignInPage } from './SignInPage';
 import { SignOutPage } from './SignOutPage';
 import { NotFoundPage } from './NotFoundPage';
 import { QuestionPage } from './QuestionPage';
-import { AuthProvider, useAuth } from './Auth';
+import { AuthProvider } from './Auth';
 import { AuthorizedPage } from './AuthorizedPage';
 const AskPage = lazy(() => import('./AskPage'));
 
 const App: React.FC = () => {
-  const auth = useAuth();
-  auth.renew();
   return (
     <AuthProvider>
       <BrowserRouter>

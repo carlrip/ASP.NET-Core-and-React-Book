@@ -39,7 +39,7 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
     history.push(`/search?criteria=${search}`);
   };
 
-  const auth = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
 
   return (
     <div
@@ -91,23 +91,24 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
           `}
         />
       </form>
-      {auth.isAuthenticated() ? (
-        <div>
-          <span>{auth.getUserName()}</span>
-          <Link
-            to={{ pathname: '/signout', state: { local: true } }}
-            css={buttonStyle}
-          >
+      {!loading &&
+        (isAuthenticated ? (
+          <div>
+            <span>{user!.name}</span>
+            <Link
+              to={{ pathname: '/signout', state: { local: true } }}
+              css={buttonStyle}
+            >
+              <UserIcon />
+              <span>Sign Out</span>
+            </Link>
+          </div>
+        ) : (
+          <Link to="/signin" css={buttonStyle}>
             <UserIcon />
-            <span>Sign Out</span>
+            <span>Sign In</span>
           </Link>
-        </div>
-      ) : (
-        <Link to="/signin" css={buttonStyle}>
-          <UserIcon />
-          <span>Sign In</span>
-        </Link>
-      )}
+        ))}
     </div>
   );
 };

@@ -32,7 +32,7 @@ export const HomePage: FC<RouteComponentProps> = ({ history }) => {
     history.push('/ask');
   };
 
-  const auth = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Page>
@@ -44,7 +44,7 @@ export const HomePage: FC<RouteComponentProps> = ({ history }) => {
         `}
       >
         <PageTitle>Unanswered Questions</PageTitle>
-        {auth.isAuthenticated() && (
+        {isAuthenticated && (
           <PrimaryButton onClick={handleAskQuestionClick}>
             Ask a question
           </PrimaryButton>

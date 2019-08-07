@@ -10,15 +10,10 @@ interface Props {
 }
 
 export const SignInPage: FC<Props> = ({ action }) => {
-  const { signIn, signInCallback } = useAuth();
+  const { signIn } = useAuth();
 
-  switch (action) {
-    case 'signin':
-      signIn();
-      break;
-    case 'signin-callback':
-      signInCallback();
-      break;
+  if (action === 'signin') {
+    signIn();
   }
 
   return (

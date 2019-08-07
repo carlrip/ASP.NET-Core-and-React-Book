@@ -120,7 +120,7 @@ export const QuestionPage: FC<RouteComponentProps<RouteParams>> = ({
     return { success: result ? true : false };
   };
 
-  const auth = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Page>
@@ -164,7 +164,7 @@ export const QuestionPage: FC<RouteComponentProps<RouteParams>> = ({
           ${question.created.toLocaleTimeString()}`}
             </div>
             <AnswerList data={question.answers} />
-            {auth.isAuthenticated() && (
+            {isAuthenticated && (
               <div
                 css={css`
                   margin-top: 20px;

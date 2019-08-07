@@ -1,115 +1,89 @@
-import React, { createContext, FC } from 'react';
-import auth0 from 'auth0-js';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  FC,
+} from 'react';
+import createAuth0Client from '@auth0/auth0-spa-js';
+import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { authSettings } from './AppSettings';
 
-const authZeroClient = new auth0.WebAuth(authSettings);
-
-const userNameKey = 'userName';
-const accessTokenKey = 'accessToken';
-const expiryKey = 'expiry';
-
-const getUserName = () => localStorage.getItem(userNameKey);
-const setUserName = (userName: string) =>
-  localStorage.setItem(userNameKey, userName);
-
-export const getAccessToken = () => localStorage.getItem(accessTokenKey);
-const setAccessToken = (accessToken: string) =>
-  localStorage.setItem(accessTokenKey, accessToken);
-
-const getExpiry = () => localStorage.getItem(expiryKey);
-const setExpiry = (expiry: string) => localStorage.setItem(expiryKey, expiry);
-
-const isAuthenticated = () => {
-  const expiry = getExpiry();
-  if (expiry === null) {
-    return false;
-  } else {
-    const expiryInMillisecs = Number(expiry) * 1000;
-    return new Date().getTime() < expiryInMillisecs;
-  }
-};
-
-const signIn = () => authZeroClient.authorize();
-
-const signInCallback = () => {
-  authZeroClient.parseHash((err, authResult) => {
-    saveAuthInLocalStorage(err, authResult);
-    window.location.replace(window.location.origin);
-  });
-};
-
-const signOut = () => {
-  clearAuthFromLocalStorage();
-  authZeroClient.logout({
-    returnTo: window.location.origin + '/signout-callback',
-  });
-};
-
-const renew = () => {
-  if (
-    window.location.pathname !== '/signin-callback' &&
-    window.location.pathname !== '/signout-callback'
-  ) {
-    authZeroClient.checkSession({}, saveAuthInLocalStorage);
-  }
-};
-
-const saveAuthInLocalStorage = (
-  err: auth0.Auth0ParseHashError | null,
-  authResult: auth0.Auth0DecodedHash | null,
-) => {
-  if (err) {
-    console.log(err);
-  }
-  if (
-    !err &&
-    authResult &&
-    authResult.accessToken &&
-    authResult.idTokenPayload &&
-    authResult.idTokenPayload.exp
-  ) {
-    setAccessToken(authResult.accessToken);
-    setExpiry(authResult.idTokenPayload.exp);
-    setUserName(authResult.idTokenPayload.name);
-  } else {
-    clearAuthFromLocalStorage();
-  }
-};
-
-const clearAuthFromLocalStorage = () => {
-  localStorage.removeItem(userNameKey);
-  localStorage.removeItem(accessTokenKey);
-  localStorage.removeItem(expiryKey);
-};
-
-interface AuthContext {
-  authZeroClient: auth0.WebAuth;
-  getAccessToken: () => string | null;
-  isAuthenticated: () => boolean;
-  getUserName: () => string | null;
-  signIn: () => void;
-  signInCallback: () => void;
-  signOut: () => void;
-  renew: () => void;
+interface Auth0User {
+  name: string;
+  email: string;
 }
-const authContextValue = (): AuthContext => ({
-  authZeroClient,
-  getAccessToken,
-  isAuthenticated,
-  getUserName,
-  signIn,
-  signInCallback,
-  signOut,
-  renew,
+interface IAuth0Context {
+  isAuthenticated: boolean;
+  user?: Auth0User;
+  signIn: () => void;
+  signOut: () => void;
+  loading: boolean;
+}
+export const Auth0Context = createContext<IAuth0Context>({
+  isAuthenticated: false,
+  signIn: () => {},
+  signOut: () => {},
+  loading: true,
 });
-export const AuthContext = createContext<AuthContext>(authContextValue());
+
+export const useAuth = () => useContext(Auth0Context);
 
 export const AuthProvider: FC = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<Auth0User | undefined>(undefined);
+  const [auth0Client, setAuth0Client] = useState<Auth0Client>();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const initAuth0 = async () => {
+      setLoading(true);
+      const auth0FromHook = await createAuth0Client(authSettings);
+      setAuth0Client(auth0FromHook);
+
+      if (
+        window.location.pathname === '/signin-callback' &&
+        window.location.search.indexOf('code=') > -1
+      ) {
+        await auth0FromHook.handleRedirectCallback();
+        window.location.replace(window.location.origin);
+      }
+
+      const isAuthenticatedFromHook = await auth0FromHook.isAuthenticated();
+      if (isAuthenticatedFromHook) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
+      }
+      setIsAuthenticated(isAuthenticatedFromHook);
+      setLoading(false);
+    };
+    initAuth0();
+  }, []);
+
+  const getAuth0ClientFromState = () => {
+    if (auth0Client === undefined) {
+      throw new Error('Auth0 client not set');
+    }
+    return auth0Client;
+  };
+
   return (
-    <AuthContext.Provider value={authContextValue()}>
+    <Auth0Context.Provider
+      value={{
+        isAuthenticated,
+        user,
+        signIn: () => getAuth0ClientFromState().loginWithRedirect(),
+        signOut: () => getAuth0ClientFromState().logout(),
+        loading,
+      }}
+    >
       {children}
-    </AuthContext.Provider>
+    </Auth0Context.Provider>
   );
 };
 
-export const useAuth = () => React.useContext(AuthContext);
+export const getAccessToken = async () => {
+  const auth0FromHook = await createAuth0Client(authSettings);
+  const accessToken = await auth0FromHook.getTokenSilently();
+  return accessToken;
+};

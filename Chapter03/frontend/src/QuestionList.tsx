@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
 import { gray5, accent2 } from './Styles';
@@ -40,5 +40,3 @@ export const QuestionList: FC<Props> = ({ data, renderItem }) => {
     </ul>
   );
 };
-
-export const QuestionListMemo = memo(QuestionList);

@@ -5,7 +5,6 @@ import { QuestionList } from './QuestionList';
 import { searchQuestions, QuestionData } from './QuestionsData';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
-import 'url-search-params-polyfill';
 
 export const SearchPage: FC<RouteComponentProps> = ({ location }) => {
   const [questions, setQuestions] = useState<QuestionData[]>([]);

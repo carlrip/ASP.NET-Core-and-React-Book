@@ -4,7 +4,6 @@ import { UserIcon } from './Icons';
 import { css, jsx } from '@emotion/core';
 import { fontFamily, fontSize, gray1, gray2, gray5 } from './Styles';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import 'url-search-params-polyfill';
 import { useAuth } from './Auth';
 
 const buttonStyle = css`

@@ -5,7 +5,6 @@ import { QuestionList } from './QuestionList';
 import { QuestionData } from './QuestionsData';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
-import 'url-search-params-polyfill';
 import { connect } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';

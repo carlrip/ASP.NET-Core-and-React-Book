@@ -1,8 +1,15 @@
 import { FC, useContext, ChangeEvent } from 'react';
+import { FormContext } from './Form';
+
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
-import { fontFamily, fontSize, gray5, gray2, gray6 } from './Styles';
-import { FormContext } from './Form';
+import {
+  fontFamily,
+  fontSize,
+  gray5,
+  gray2,
+  gray6,
+} from './Styles';
 
 interface Props {
   name: string;
@@ -29,31 +36,36 @@ const baseCSS = css`
   }
 `;
 
-export const Field: FC<Props> = ({ name, label, type = 'Text' }) => {
-  const formContext = useContext(FormContext);
-
+export const Field: FC<Props> = ({
+  name,
+  label,
+  type = 'Text',
+}) => {
+  const { setValue, touched, setTouched, validate } = useContext(
+    FormContext,
+  );
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+    e:
+      | ChangeEvent<HTMLInputElement>
+      | ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    if (formContext.setValue) {
-      formContext.setValue(name, e.currentTarget.value);
+    if (setValue) {
+      setValue(name, e.currentTarget.value);
     }
-    if (formContext.touched[name]) {
-      if (formContext.validate) {
-        formContext.validate(name);
+    if (touched[name]) {
+      if (validate) {
+        validate(name);
       }
     }
   };
-
   const handleBlur = () => {
-    if (formContext.setTouched) {
-      formContext.setTouched(name);
+    if (setTouched) {
+      setTouched(name);
     }
-    if (formContext.validate) {
-      formContext.validate(name);
+    if (validate) {
+      validate(name);
     }
   };
-
   return (
     <FormContext.Consumer>
       {({ values, errors }) => (
@@ -78,7 +90,9 @@ export const Field: FC<Props> = ({ name, label, type = 'Text' }) => {
             <input
               type={type.toLowerCase()}
               id={name}
-              value={values[name] === undefined ? '' : values[name]}
+              value={
+                values[name] === undefined ? '' : values[name]
+              }
               onChange={handleChange}
               onBlur={handleBlur}
               css={baseCSS}
@@ -87,7 +101,9 @@ export const Field: FC<Props> = ({ name, label, type = 'Text' }) => {
           {type === 'TextArea' && (
             <textarea
               id={name}
-              value={values[name] === undefined ? '' : values[name]}
+              value={
+                values[name] === undefined ? '' : values[name]
+              }
               onChange={handleChange}
               onBlur={handleBlur}
               css={css`

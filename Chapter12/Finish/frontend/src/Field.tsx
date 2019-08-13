@@ -30,27 +30,27 @@ const baseCSS = css`
 `;
 
 export const Field: FC<Props> = ({ name, label, type = 'Text' }) => {
-  const formContext = useContext(FormContext);
+  const { setValue, touched, setTouched, validate } = useContext(FormContext);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    if (formContext.setValue) {
-      formContext.setValue(name, e.currentTarget.value);
+    if (setValue) {
+      setValue(name, e.currentTarget.value);
     }
-    if (formContext.touched[name]) {
-      if (formContext.validate) {
-        formContext.validate(name);
+    if (touched[name]) {
+      if (validate) {
+        validate(name);
       }
     }
   };
 
   const handleBlur = () => {
-    if (formContext.setTouched) {
-      formContext.setTouched(name);
+    if (setTouched) {
+      setTouched(name);
     }
-    if (formContext.validate) {
-      formContext.validate(name);
+    if (validate) {
+      validate(name);
     }
   };
 

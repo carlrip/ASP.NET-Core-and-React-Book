@@ -39,7 +39,7 @@ namespace QandA
             {
                 app.UseHttpsRedirection();
             }
-
+            
             app.UseRouting();
 
             app.UseAuthorization();

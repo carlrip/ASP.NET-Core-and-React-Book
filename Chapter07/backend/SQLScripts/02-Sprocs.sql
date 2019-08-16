@@ -1,4 +1,4 @@
-CREATE PROC dbo.Answer_Delete
+﻿CREATE PROC dbo.Answer_Delete
 	(
 	@AnswerId int
 )

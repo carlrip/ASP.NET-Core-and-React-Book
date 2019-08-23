@@ -28,7 +28,6 @@ jest.mock('./QuestionsData', () => ({
   }),
 }));
 
-// requires 16.9.0-alpha.0
 test('When HomePage first rendered, loading indicator should show', () => {
   let mock: any = jest.fn();
   const { getByText } = render(

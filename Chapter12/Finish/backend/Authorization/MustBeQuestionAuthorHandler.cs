@@ -23,6 +23,7 @@ namespace QandA.Authorization
             if (!context.User.Identity.IsAuthenticated)
             {
                 context.Fail();
+                return;
             }
 
             var questionId = _httpContextAccessor.HttpContext.Request.RouteValues["questionId"];
@@ -35,11 +36,13 @@ namespace QandA.Authorization
             {
                 // let it through so the controller can return a 404
                 context.Succeed(requirement);
+                return;
             }
 
             if (question.UserId != userId)
             {
                 context.Fail();
+                return;
             }
 
             context.Succeed(requirement);

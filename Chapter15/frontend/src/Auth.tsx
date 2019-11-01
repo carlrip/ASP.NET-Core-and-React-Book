@@ -73,7 +73,10 @@ export const AuthProvider: FC = ({ children }) => {
         isAuthenticated,
         user,
         signIn: () => getAuth0ClientFromState().loginWithRedirect(),
-        signOut: () => getAuth0ClientFromState().logout(),
+        signOut: () => getAuth0ClientFromState().logout({
+          client_id: authSettings.client_id,
+          returnTo: window.location.origin + '/signout-callback',
+        }),
         loading,
       }}
     >

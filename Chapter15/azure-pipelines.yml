@@ -7,21 +7,17 @@ trigger:
 - master
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
-# -------------
-# Backend build
-#--------------
-
 - script: dotnet build --configuration $(buildConfiguration)
   workingDirectory: backend
-  displayName: 'backend build'
+  displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test --filter Category=Unit
+- script: dotnet test
   workingDirectory: backend
   displayName: 'backend tests'
 
@@ -31,37 +27,18 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'backend/QandA/bin/Release/netcoreapp2.2/publish' 
+    rootFolderOrFile: 'backend/bin/Release/netcoreapp3.0/publish' 
     includeRootFolder: false
     archiveType: zip
     archiveFile: '$(Build.ArtifactStagingDirectory)/backend/$(Build.BuildId).zip'
     replaceExistingArchive: true 
   displayName: 'backend zip files'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: 'backend/QandAUnitTests/bin/Release/netcoreapp2.2/publish' 
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/backend-tests/$(Build.BuildId).zip'
-    replaceExistingArchive: true 
-  displayName: 'backend zip test files'
-
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)/backend' 
     artifactName: 'backend' 
   displayName: 'backend publish to pipeline'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/backend-tests' 
-    artifactName: 'backend-tests' 
-  displayName: 'backend publish tests to pipeline'
-
-# --------------
-# Frontend build
-#---------------
 
 - script: npm install
   workingDirectory: frontend
@@ -70,7 +47,6 @@ steps:
 - script: npm run test:ci
   workingDirectory: frontend
   displayName: 'frontend tests'
-  timeoutInMinutes: 5
 
 - script: npm run build:staging
   workingDirectory: frontend
@@ -81,9 +57,18 @@ steps:
     rootFolderOrFile: 'frontend/build' 
     includeRootFolder: false
     archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend-staging/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend-staging/build.zip'
     replaceExistingArchive: true 
   displayName: 'frontend staging zip files'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'frontend/cypress' 
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend-staging/tests.zip'
+    replaceExistingArchive: true 
+  displayName: 'frontend cypress zip files'
 
 - task: PublishBuildArtifacts@1
   inputs:

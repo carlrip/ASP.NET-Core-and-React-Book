@@ -85,7 +85,7 @@ steps:
     rootFolderOrFile: 'frontend/build' 
     includeRootFolder: false
     archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend-production/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend-production/build.zip'
     replaceExistingArchive: true 
   displayName: 'frontend staging zip files'
 
